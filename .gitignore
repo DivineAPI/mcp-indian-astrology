@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+dist/
+build/
+*.egg-info/
+.venv/
+.env
+
+# macOS
+.DS_Store
+
+# Deploy secrets (real values live here; never commit)
+mcp-deploy.env
+
+# Server.py backups created on the VPS during deploy
+server.py.bak.*

@@ -5,5 +5,4 @@ services:
       - "8001:8000"
     environment:
       - MCP_TRANSPORT=http
-      - MCP_JWT_SECRET=7882c91adfcff7e199ae5559b894cbdc950a2722c9949b282df889543fe04373
     restart: unless-stopped
