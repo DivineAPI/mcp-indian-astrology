@@ -1,376 +1,260 @@
-# 🙏 Divine API — Indian Astrology MCP Server
+# Vedic Astrology MCP Server (Kundli, Panchang) by DivineAPI
 
-The official [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for **[Divine API's](https://divineapi.com) Indian/Vedic Astrology** services.
+![Vedic Astrology MCP Server by DivineAPI](https://raw.githubusercontent.com/DivineAPI/DivineAPI/main/assets/mcp-indian-astrology.png)
 
-Connect your AI assistant (Claude, Cursor, VS Code Copilot, etc.) to the power of Vedic astrology — Panchang, Kundli, Matchmaking, Festivals, and more — all through natural language.
+Connect Claude, Cursor, VS Code or any MCP client to DivineAPI's Vedic astrology data. Tools cover Panchang, Kundli charts, dashas, doshas, matchmaking (Ashtakoot and Dashakoot), Lal Kitab, Jaimini and Hindu festival dates, returned as JSON (and SVG for charts).
 
-## ✨ What Can It Do?
+[![Docs](https://img.shields.io/badge/docs-developers.divineapi.com-blue)](https://developers.divineapi.com/indian-api)
+[![Trial](https://img.shields.io/badge/14--day%20trial-start-green)](https://divineapi.com/start-trial)
+[![MCP](https://img.shields.io/badge/MCP-streamable%20HTTP-purple)](https://divineapi.com/mcp)
+[![PyPI](https://img.shields.io/badge/pypi-divineapi--indian--astrology--mcp-orange)](https://pypi.org/project/divineapi-indian-astrology-mcp/)
+[![Status](https://img.shields.io/badge/status-status.divineapi.com-brightgreen)](https://status.divineapi.com)
+[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
-Just chat naturally with your AI assistant:
+Hosted server URL:
 
-| You say... | The MCP calls... |
-|---|---|
-| *"What's today's Panchang for Delhi?"* | `divine_get_panchang` |
-| *"Generate my Kundli — born March 15, 1990, 2:30 PM, Mumbai"* | `divine_get_basic_astro_details` |
-| *"Am I Manglik?"* | `divine_get_manglik_dosha` |
-| *"Match Kundli for Rahul and Simran"* | `divine_get_ashtakoot_milan` |
-| *"What festivals are in Kartik month 2025?"* | `divine_get_festivals_by_month` |
-| *"Show me the Navamsha (D9) chart"* | `divine_get_horoscope_chart` |
-| *"What gemstone should I wear?"* | `divine_get_gemstone_suggestions` |
-| *"Is Sadhe Sati active for me?"* | `divine_get_sadhe_sati` |
-
----
-
-## 🚀 Quick Start
-
-### 1. Get Your API Credentials
-
-Sign up at **[divineapi.com](https://divineapi.com)** and get your:
-- **API Key** — from [divineapi.com/api-keys](https://divineapi.com/api-keys)
-- **Auth Token** (Bearer Token) — from your profile page
-
-You get a **7-day free trial** — no charges until you decide to continue.
-
-### 2. Install
-
-```bash
-pip install divineapi-indian-astrology-mcp
+```
+https://mcp.divineapi.com/indian/mcp
 ```
 
-Or with `uv` (recommended):
-```bash
-uv pip install divineapi-indian-astrology-mcp
-```
+One-click install (adds the hosted server with placeholder credentials):
 
-### 3. Configure Your AI Client
+[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=divineapi-indian-astrology&config=eyJ1cmwiOiJodHRwczovL21jcC5kaXZpbmVhcGkuY29tL2luZGlhbi9tY3AiLCJoZWFkZXJzIjp7IlgtRGl2aW5lLUFwaS1LZXkiOiJZT1VSX0FQSV9LRVkiLCJYLURpdmluZS1BdXRoLVRva2VuIjoiWU9VUl9BVVRIX1RPS0VOIn19)
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=divineapi-indian-astrology&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.divineapi.com%2Findian%2Fmcp%22%2C%22headers%22%3A%7B%22X-Divine-Api-Key%22%3A%22YOUR_API_KEY%22%2C%22X-Divine-Auth-Token%22%3A%22YOUR_AUTH_TOKEN%22%7D%7D)
 
-#### Claude Desktop
+After installing, replace `YOUR_API_KEY` and `YOUR_AUTH_TOKEN` in the server's headers with your own values. In VS Code you can use the `inputs` version of the config below instead, so the values are stored securely.
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (Mac) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+## Connect in 1 minute
+
+**1. Get your credentials.** Start the [14-day free trial](https://divineapi.com/start-trial) (credit card required to activate the trial), then copy your **API key** and **auth token** from the DivineAPI dashboard.
+
+**2. Add the server to your client.** The hosted server accepts your credentials in one of two ways:
+
+- **Request headers:** `X-Divine-Api-Key` and `X-Divine-Auth-Token` (Cursor, VS Code, Claude Code).
+- **Sign-in page (OAuth):** the client opens a DivineAPI page where you paste the API key and auth token once (Claude.ai and Claude Desktop custom connectors).
+
+### Claude.ai and Claude Desktop (custom connector)
+
+Custom connectors added in Claude.ai also appear in Claude Desktop.
+
+1. Open **Customize > Connectors**, click **+ Add**, then **Add custom connector**.
+2. Name: `DivineAPI Vedic Astrology`. URL: `https://mcp.divineapi.com/indian/mcp`. Click **Continue**.
+3. Keep the detected sign-in settings and click **Add**. When you connect, a DivineAPI sign-in page opens: paste your API key and auth token and click **Connect**.
+
+If your Claude plan offers request headers for custom connectors, you can instead choose no sign-in and add the two headers `X-Divine-Api-Key` and `X-Divine-Auth-Token`.
+
+Team and Enterprise plans: an owner adds the connector under **Organization settings > Connectors** first. Steps from [Claude's custom connector guide](https://support.claude.com/en/articles/11175166).
+
+### Cursor
+
+`~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project):
 
 ```json
 {
   "mcpServers": {
-    "divine-indian-astrology": {
-      "command": "python",
-      "args": ["-m", "divineapi_indian_astrology_mcp"],
-      "env": {
-        "DIVINE_API_KEY": "your-api-key-here",
-        "DIVINE_AUTH_TOKEN": "your-bearer-token-here"
+    "divineapi-indian-astrology": {
+      "url": "https://mcp.divineapi.com/indian/mcp",
+      "headers": {
+        "X-Divine-Api-Key": "YOUR_API_KEY",
+        "X-Divine-Auth-Token": "YOUR_AUTH_TOKEN"
       }
     }
   }
 }
 ```
 
-#### Cursor / VS Code
+### VS Code (GitHub Copilot agent mode)
 
-Add to your MCP settings:
+`.vscode/mcp.json`. VS Code asks for both values on first start and stores them securely:
 
 ```json
 {
-  "divine-indian-astrology": {
-    "command": "python",
-    "args": ["-m", "divineapi_indian_astrology_mcp"],
-    "env": {
-      "DIVINE_API_KEY": "your-api-key-here",
-      "DIVINE_AUTH_TOKEN": "your-bearer-token-here"
+  "inputs": [
+    { "type": "promptString", "id": "divine-api-key", "description": "DivineAPI API key", "password": true },
+    { "type": "promptString", "id": "divine-auth-token", "description": "DivineAPI auth token", "password": true }
+  ],
+  "servers": {
+    "divineapi-indian-astrology": {
+      "type": "http",
+      "url": "https://mcp.divineapi.com/indian/mcp",
+      "headers": {
+        "X-Divine-Api-Key": "${input:divine-api-key}",
+        "X-Divine-Auth-Token": "${input:divine-auth-token}"
+      }
     }
   }
 }
 ```
 
-#### Claude Code
+### Claude Code
 
 ```bash
-claude mcp add divine-indian-astrology \
-  -e DIVINE_API_KEY=your-api-key-here \
-  -e DIVINE_AUTH_TOKEN=your-bearer-token-here \
-  -- python -m divineapi_indian_astrology_mcp
+claude mcp add --transport http divineapi-indian-astrology https://mcp.divineapi.com/indian/mcp \
+  --header "X-Divine-Api-Key: YOUR_API_KEY" \
+  --header "X-Divine-Auth-Token: YOUR_AUTH_TOKEN"
 ```
 
-### 4. Restart your AI client and start chatting!
+Run `/mcp` inside Claude Code to check the connection.
 
----
+### Clients that send only one credential field
 
-## 📋 Available Tools (104 Total)
+If a client can send only a single bearer token and no custom headers, send `Authorization: Bearer YOUR_API_KEY:YOUR_AUTH_TOKEN` (API key, a colon, then the auth token). The server splits it into the two credentials.
 
-### 🗓️ Panchang (Daily Vedic Calendar) — 6 Tools
+## Example prompts
 
-| Tool | Description |
-|------|-------------|
-| `divine_get_panchang` | Get the complete daily Panchang for a given date and location |
-| `divine_get_tithi` | Get tithi (lunar day) details for a given date and location |
-| `divine_get_nakshatra` | Get nakshatra (lunar mansion) details for a given date and location |
-| `divine_get_karana` | Get karana details for a given date and location |
-| `divine_get_surya_nakshatra` | Get Surya (Sun) Nakshatra details for a given date and location |
-| `divine_get_yoga_panchang` | Get yoga (Sun-Moon angular relationship) for a given date and location |
+- "What is today's Panchang for New Delhi? Include tithi, nakshatra, yoga, karana and Rahu Kaal."
+- "I was born on 15 March 1990 at 14:30 in Mumbai. Show my D1 and D9 charts and my current Vimshottari dasha."
+- "Am I Manglik? Is Sadhe Sati active for me right now?"
+- "Match these two birth charts with Ashtakoot Milan and explain the guna score."
+- "List the Hindu festivals in Kartik month this year, with dates for Delhi."
+- "Give me my Lal Kitab planetary positions and the debts (rin) in my chart."
 
-### 🗓️ Panchang Extended — 7 Tools
+## Tool groups
 
-| Tool | Description |
-|------|-------------|
-| `divine_get_choghadiya` | Get Choghadiya (auspicious time slots) for a given date and location |
-| `divine_get_nivas_and_shool` | Get Nivas and Shool (directional inauspicious timings) for a date and location |
-| `divine_get_ritu_and_anaya` | Get Ritu (season) and Anaya details for a given date and location |
-| `divine_get_samvat` | Get Samvat (Hindu calendar year) details for a given date and location |
-| `divine_get_chandrabalam_and_tarabalam` | Get Chandrabalam and Tarabalam for a given date and location |
-| `divine_get_other_calendars_and_epoch` | Get dates in other calendar systems and epoch values for a given date |
-| `divine_get_sun_moon` | Get sun and moon rise/set timings for a given date and location |
+The table lists 99 of the 104 tools in [`server.py`](server.py) (version 2.5.0); the 5 KP tools are listed after the DivineAPI team confirms KP. The hosted server is updated more often and can list more tools; your MCP client always shows the live list.
 
-### ⏰ Timings (Muhurat & Gowri Panchangam) — 3 Tools
+| Group | Tools | What they cover |
+|---|---|---|
+| Panchang | 6 | `divine_get_panchang`, `divine_get_tithi`, `divine_get_nakshatra`, `divine_get_karana`, `divine_get_surya_nakshatra`, `divine_get_yoga_panchang` |
+| Panchang extended | 7 | Choghadiya, Nivas and Shool, Ritu and Anaya, Samvat, Chandrabalam and Tarabalam, other calendars and epoch, sun and moon rise/set |
+| Timings | 3 | Auspicious timings (muhurat), inauspicious timings, Gowri Panchangam |
+| Kundli basics | 9 | Basic astro details, planetary positions, divisional charts (`divine_get_horoscope_chart`: D1, D9, D10 and others, north or south style, SVG), Bhava Kundli, planet analysis, ascendant report, Uday Lagna, Chandramasa, Chandrashtama |
+| Doshas | 4 | Manglik dosha, Kaal Sarpa yoga, Pitra dosha, Sadhe Sati |
+| Dasha | 6 | Vimshottari dasha, Maha / Antar / Pratyantar dasha analysis, Yogini dasha, Kaal Chakra dasha |
+| Yogas and strengths | 8 | Yogas, Nav Pancham yoga, Shadbala, composite friendship, Ghata Chakra, Sudarshana Chakra, Panchak Rahita, gemstone suggestion |
+| Ashtakvarga | 3 | Bhinnashtakvarga, Prasthara Chakra, Sarvashtakavarga |
+| Sub planets (Upagrahas) | 2 | Sub-planet positions, sub-planet chart |
+| Jaimini | 4 | Chara dasha, Karakamsha Lagna, Padas (Arudha), Jaimini planetary positions and karakas |
+| Transits | 6 | Kundli transit from ascendant and from Moon, Grah Gochar, planet combustion, nakshatra and retrograde transits |
+| Matchmaking (Kundli Milan) | 7 | Ashtakoot Milan, Dashakoot Milan, matching Manglik, basic astro, charts, Vimshottari dasha and planetary positions for both people |
+| Festivals | 7 | Festivals by date, by English month, by Hindu month, find a festival, Malayalam, Tamil and Sankranti festivals |
+| Lal Kitab | 16 | Planetary positions, chart, house positions, conjunctions, teva, planet analysis, dasha, planet types, mahadasha and antardasha content, debts, house signification, Varsha Pravesh, varshphal positions, Muntha and chart |
+| Kundli analysis | 6 | Vargottama planets, Bhava Bala, Ashtama Shani, bhava analysis, bhava group predictions, planet remedies |
+| Monthly lists | 5 | Chandramasa list, month nakshatra list, sunrise and sunset list, Surya nakshatra list, tithi list |
 
-| Tool | Description |
-|------|-------------|
-| `divine_get_auspicious_timings` | Get auspicious timings (shubh muhurat) for a given date and location |
-| `divine_get_inauspicious_timings` | Get inauspicious timings for a given date and location |
-| `divine_get_gowri_panchangam` | Get the Gowri Panchangam for a given date and location |
+All tools are read-only (`readOnlyHint: true`) and each tool call makes one request to the DivineAPI REST API on the `astroapi-1`, `astroapi-2`, `astroapi-3` or `astroapi-8` host.
 
-### 🔮 Kundli (Birth Chart) Basics — 9 Tools
+### Inputs the model needs to know
 
-| Tool | Description |
-|------|-------------|
-| `divine_get_basic_astro_details` | Get basic astrological details for a person based on their birth data |
-| `divine_get_planetary_positions` | Get planetary positions in the birth chart (Kundli) |
-| `divine_get_horoscope_chart` | Generate a Vedic horoscope chart (Kundli diagram) as SVG and image |
-| `divine_get_bhava_kundli` | Get Bhava Kundli (house-based chart) for a given bhava chart number |
-| `divine_get_planet_analysis` | Get detailed analysis of one planet in the birth chart |
-| `divine_get_ascendant_report` | Get a detailed report based on the ascendant (Lagna) sign |
-| `divine_get_uday_lagna` | Get Uday Lagna (rising sign) timings for a given date and location |
-| `divine_get_chandramasa` | Get Chandramasa (Hindu lunar month) details for a given date and location |
-| `divine_get_chandrashtama` | Get Chandrashtama periods for a given month and location |
+- Dates are separate `day`, `month`, `year` fields (plus `hour`, `min`, `sec` for birth charts; send `sec` as `0` if unknown).
+- `place` is a plain lowercase city string; `lat` and `lon` are decimals.
+- `tzone` is a decimal UTC offset, for example `5.5` for India. Never `+5:30`.
+- Calculations are sidereal with the Lahiri ayanamsa.
+- `lan` sets the response language. Vedic responses support 8 Indian languages with DivineAPI's own codes:
 
-### ⚠️ Doshas — 4 Tools
+| Language | Code | Language | Code |
+|---|---|---|---|
+| English | `en` | Tamil | `tm` |
+| Hindi | `hi` | Telugu | `tl` |
+| Bengali | `bn` | Malayalam | `ml` |
+| Marathi | `ma` | Kannada | `kn` |
 
-| Tool | Description |
-|------|-------------|
-| `divine_get_manglik_dosha` | Check for Manglik Dosha (Mangal Dosha / Kuja Dosha) in the birth chart |
-| `divine_get_kaal_sarpa_yoga` | Check for Kaal Sarpa Yoga in the birth chart |
-| `divine_get_pitra_dosha` | Check for Pitra Dosha (ancestral affliction) in the birth chart |
-| `divine_get_sadhe_sati` | Check Sadhe Sati (Saturn transit) status for the person |
+## Self-hosting
 
-### 🪐 Dasha Systems — 6 Tools
+You only need this if you want to run the server yourself instead of using the hosted URL. The server reads your credentials from two environment variables: `DIVINE_API_KEY` and `DIVINE_AUTH_TOKEN`.
 
-| Tool | Description |
-|------|-------------|
-| `divine_get_vimshottari_dasha` | Get Vimshottari Dasha periods for a birth chart at the requested granularity |
-| `divine_get_maha_dasha_analysis` | Get textual interpretation of a Maha Dasha period (no birth data needed) |
-| `divine_get_antar_dasha_analysis` | Get textual interpretation of an Antar Dasha (Maha→Antar) period |
-| `divine_get_pratyantar_dasha_analysis` | Get textual interpretation of a Pratyantar Dasha (Maha→Antar→Pratyantar) period |
-| `divine_get_yogini_dasha` | Get Yogini Dasha periods for a birth chart |
-| `divine_get_kaal_chakra_dasha` | Get Kaal Chakra Dasha periods for a birth chart |
-
-### 💪 Yogas & Strengths — 8 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_yogas` | Get all yogas (planetary combinations) present in the birth chart |
-| `divine_get_nav_pancham_yoga` | Get Nav Pancham Yoga compatibility analysis between two charts |
-| `divine_get_shadbala` | Get Shadbala (six-fold planetary strength) for a birth chart |
-| `divine_get_composite_friendship` | Get composite (Panchda) friendship table for all planets |
-| `divine_get_ghata_chakra` | Get Ghata Chakra (adverse combinations) for a birth chart |
-| `divine_get_sudarshana_chakra` | Get Sudarshana Chakra for a birth chart |
-| `divine_get_panchak_rahita` | Check Panchak status for a given date and location |
-| `divine_get_gemstone_suggestion` | Get gemstone recommendations based on the birth chart |
-
-### 📊 Ashtakvarga — 3 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_ashtakvarga` | Get Bhinnashtakvarga (individual Ashtakvarga) tables for all planets |
-| `divine_get_prasthara_chakra` | Get Prasthara Chakra (expanded Ashtakvarga) for a birth chart |
-| `divine_get_sarvashtakavarga` | Get Sarvashtakavarga (combined Ashtakvarga) for a specific chart |
-
-### 🌑 Sub Planets (Upagrahas) — 2 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_sub_planet_positions` | Get sub-planet (Upagraha) positions for a birth chart |
-| `divine_get_sub_planet_chart` | Generate a sub-planet (Upagraha) chart as SVG and image |
-
-### 📜 Jaimini Astrology — 4 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_jaimini_chara_dasha` | Get Jaimini Chara Dasha periods for a birth chart |
-| `divine_get_jaimini_karakamsha_lagna` | Get Karakamsha Lagna from Jaimini astrology for a birth chart |
-| `divine_get_jaimini_padas` | Get Jaimini Padas (Arudha Padas) for all houses in a birth chart |
-| `divine_get_jaimini_planetary_positions` | Get Jaimini-specific planetary positions and karakas |
-
-### 🎯 KP (Krishnamurti Paddhati) — 5 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_kp_cuspal_sub` | Get KP Cuspal Sub Lords for all house cusps |
-| `divine_get_kp_planetary_sub` | Get KP Planetary Sub Lords for all planets |
-| `divine_get_kp_cuspal_significator` | Get KP Planetary-Cuspal Significator Table |
-| `divine_get_kp_cuspal` | Get KP Cuspal chart data for a birth chart |
-| `divine_get_kp_planetary_positions` | Get KP Planetary Positions for a birth chart |
-
-### 🚀 Transits — 6 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_kundli_transit_ascendant` | Get transit analysis from the Ascendant (Lagna) on a chosen transit date |
-| `divine_get_kundli_transit_moon` | Get transit analysis from the Moon sign on a chosen transit date |
-| `divine_get_grah_gochar` | Get Grah Gochar (planetary transit) data for a specific planet |
-| `divine_get_planet_combustion_transit` | Get planet combustion (Asta) transit details for a specific planet |
-| `divine_get_planet_nakshatra_transit` | Get nakshatra transit details for a specific planet |
-| `divine_get_planet_retrograde_transit` | Get retrograde transit details for a specific planet |
-
-### 💑 Matchmaking (Kundli Milan) — 7 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_ashtakoot_milan` | Perform Ashtakoot Milan (8-point compatibility matching) for two people |
-| `divine_get_dashakoot_milan` | Perform Dashakoot Milan (10-point compatibility matching) for two people |
-| `divine_get_matching_manglik` | Check Manglik Dosha for both people in a matchmaking context |
-| `divine_get_matching_basic_astro` | Get basic astrological details for both persons in matchmaking |
-| `divine_get_matching_horoscope_chart` |  |
-| `divine_get_matching_vimshottari_dasha` | Get Vimshottari Dasha for both persons in matchmaking |
-| `divine_get_matching_planetary_positions` | Get planetary positions for both persons in matchmaking |
-
-### 🎉 Festivals — 7 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_festivals_by_date` | Get festivals falling on a specific date |
-| `divine_get_english_calendar_festivals` | Get all Hindu festivals for a specific English calendar month |
-| `divine_find_festival` | Find the date(s) of a specific festival in a given year |
-| `divine_get_festivals_by_month` | Get all Hindu festivals for a specific Hindu calendar month |
-| `divine_get_malayalam_festivals` | Get major Malayalam (Kerala) festivals for a year |
-| `divine_get_tamil_festivals` | Get major Tamil festivals for a year |
-| `divine_get_sankranti_festivals` | Get the twelve solar Sankranti festivals for a year |
-
-
-### 📕 Lal Kitab — 16 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_lal_kitab_planetary_positions` | Get Lal Kitab planetary positions for a birth chart |
-| `divine_get_lal_kitab_horoscope_chart` | Generate the Lal Kitab horoscope chart for a birth chart |
-| `divine_get_lal_kitab_house_position` | Get Lal Kitab house positions for a birth chart |
-| `divine_get_lal_kitab_conjunctions` | Get Lal Kitab planetary conjunctions for a birth chart |
-| `divine_get_lal_kitab_teva` | Get Lal Kitab teva (chart conditions) for a birth chart |
-| `divine_get_lal_kitab_planet_analysis` | Get Lal Kitab analysis of one planet in the birth chart |
-| `divine_get_lal_kitab_dasha` | Get Lal Kitab dasha periods for a birth chart |
-| `divine_get_lal_kitab_planet_types` | Get Lal Kitab planet types for a birth chart |
-| `divine_get_lal_kitab_mahadasha_content` | Get textual Lal Kitab interpretation of a Mahadasha period |
-| `divine_get_lal_kitab_antardasha_content` | Get textual Lal Kitab interpretation of a Mahadasha-Antardasha combination |
-| `divine_get_lal_kitab_debts` | Get Lal Kitab debts (rin) for a birth chart |
-| `divine_get_lal_kitab_house_signification` | Get the Lal Kitab signification of one house for a birth chart |
-| `divine_get_lal_kitab_varsha_pravesh` | Get the Lal Kitab Varsha Pravesh (annual chart entry) for a chosen year |
-| `divine_get_lal_kitab_varshphal_planetary_positions` | Get Lal Kitab varshphal (annual chart) planetary positions |
-| `divine_get_lal_kitab_varshphal_muntha` | Get the Lal Kitab varshphal Muntha for a chosen year |
-| `divine_get_lal_kitab_varshphal_chart` | Generate the Lal Kitab varshphal (annual) chart for a chosen year |
-
-### 🧭 Kundli Analysis (Vargottama, Bhava & Remedies) — 6 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_vargottama_planets` | Get the vargottama planets (same sign in the D1 and D9 charts) for a birth chart |
-| `divine_get_bhav_bala` | Get Bhava Bala (numeric strength of each of the twelve houses) for a birth chart |
-| `divine_get_shani_ashtam_shani` | Get the Ashtama Shani analysis (Saturn in the 8th from natal Saturn) for a birth chart |
-| `divine_get_bhava_analysis` | Get the house-by-house analysis (sign, lord, occupants, aspects) for a birth chart |
-| `divine_get_bhava_group_predictions` | Get predictions grouped by house category (kendra, trikone, trishadaya, trik, maraka, dhana) |
-| `divine_get_planet_remedies` | Get remedial measures (donation, gemstone, lifestyle, mantra) for one planet's placement |
-
-### 📅 Monthly Lists — 5 Tools
-
-| Tool | Description |
-|------|-------------|
-| `divine_get_chandramasa_list` | Get list of Chandramasa (Hindu lunar months) for a given period |
-| `divine_get_month_nakshatra_list` | Get daily nakshatra list for a given month |
-| `divine_get_month_sunrise_sunset_list` | Get daily sunrise and sunset times for a given month |
-| `divine_get_month_surya_nakshatra_list` | Get daily Surya (Sun) Nakshatra list for a given month |
-| `divine_get_month_tithi_list` | Get daily tithi list for a given month |
-
-## 🌐 Language Support
-
-All tools support multiple Indian languages via the `lan` parameter:
-
-| Code | Language |
-|---|---|
-| `en` | English (default) |
-| `hi` | Hindi |
-| `ta` | Tamil |
-| `te` | Telugu |
-| `kn` | Kannada |
-| `ml` | Malayalam |
-| `bn` | Bengali |
-| `gu` | Gujarati |
-| `mr` | Marathi |
-| `pa` | Punjabi |
-| `or` | Odia |
-| `ur` | Urdu |
-
----
-
-## 🛠️ Development / Running from Source
-
-If you want to run from source instead of installing via pip:
+### Local (stdio) with uv or pip
 
 ```bash
-# Clone the repository
+# uv (no install step)
+uvx divineapi-indian-astrology-mcp
+
+# or pip
+pip install divineapi-indian-astrology-mcp
+divineapi-indian-astrology-mcp
+```
+
+Claude Desktop local config (`claude_desktop_config.json`; on macOS `~/Library/Application Support/Claude/`, on Windows `%APPDATA%\Claude\`):
+
+```json
+{
+  "mcpServers": {
+    "divineapi-indian-astrology": {
+      "command": "uvx",
+      "args": ["divineapi-indian-astrology-mcp"],
+      "env": {
+        "DIVINE_API_KEY": "YOUR_API_KEY",
+        "DIVINE_AUTH_TOKEN": "YOUR_AUTH_TOKEN"
+      }
+    }
+  }
+}
+```
+
+The PyPI package can be newer than the code in this repository. To run exactly this repository's code:
+
+```bash
 git clone https://github.com/DivineAPI/mcp-indian-astrology.git
 cd mcp-indian-astrology
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set environment variables
-export DIVINE_API_KEY="your-api-key"
-export DIVINE_AUTH_TOKEN="your-bearer-token"
-
-# Run the server
-python server.py
+pip install .
+DIVINE_API_KEY=YOUR_API_KEY DIVINE_AUTH_TOKEN=YOUR_AUTH_TOKEN divineapi-indian-astrology-mcp
 ```
 
-Then configure your MCP client to point to the local file:
+### Remote (streamable HTTP) with Docker
 
-```json
-{
-  "mcpServers": {
-    "divine-indian-astrology": {
-      "command": "python",
-      "args": ["/full/path/to/mcp-indian-astrology/server.py"],
-      "env": {
-        "DIVINE_API_KEY": "your-api-key",
-        "DIVINE_AUTH_TOKEN": "your-bearer-token"
-      }
-    }
-  }
-}
+```bash
+docker build -t divineapi-indian-mcp .
+docker run -p 8000:8000 -e MCP_JWT_SECRET=a-long-random-string divineapi-indian-mcp
 ```
 
----
+The MCP endpoint is then `http://localhost:8000/mcp`. Clients send their own `X-Divine-Api-Key` and `X-Divine-Auth-Token` headers. `docker compose up` maps the same server to port 8001.
 
-## 🔑 Getting Your API Credentials
+| Variable | Used for |
+|---|---|
+| `DIVINE_API_KEY`, `DIVINE_AUTH_TOKEN` | Your DivineAPI credentials. Required in stdio mode; in HTTP mode, per-request headers or the sign-in page override them |
+| `MCP_TRANSPORT` | `stdio` (default) or `http` (set by the Dockerfile) |
+| `MCP_HOST` | Public host name for the OAuth sign-in flow and allowed hosts (default `mcp.divineapi.com`) |
+| `MCP_JWT_SECRET` | Secret that signs session tokens. Set a fixed value so sign-ins survive restarts |
 
-1. Go to [divineapi.com](https://divineapi.com) and sign up
-2. Start your **7-day free trial** (no charges)
-3. Find your **API Key** at [divineapi.com/api-keys](https://divineapi.com/api-keys)
-4. Find your **Auth Token** on your profile page
-5. Set them as environment variables or in your MCP client config
+The OAuth sign-in flow expects HTTPS on `MCP_HOST` behind a reverse proxy that serves the server under `/indian/` (see [`nginx.conf`](nginx.conf)). Header authentication works without it.
 
----
+## Which plan includes this
 
-## 📖 API Documentation
+The tools call the Vedic endpoints, so they use your **Vedic plan** (Vedic Sampoorna, Vedic Ananta or Vedic Prakash); a tool works when your plan includes its endpoint. Compare plans at [divineapi.com/pricing](https://divineapi.com/pricing).
 
-- **Full API Docs**: [developers.divineapi.com/indian-api](https://developers.divineapi.com/indian-api)
-- **Support**: [support.divineapi.com](https://support.divineapi.com)
-- **Pricing**: [divineapi.com/pricing](https://divineapi.com/pricing)
+## FAQ
 
----
+**Do I need a DivineAPI account to use the Vedic tools?**
+Yes. Each panchang, kundli or matching tool sends your API key and auth token to the Vedic REST endpoints. Start with the [14-day free trial](https://divineapi.com/start-trial) (credit card required to activate the trial); plans and prices are at [divineapi.com/pricing](https://divineapi.com/pricing).
 
-## 📝 License
+**Can Claude Desktop or Cursor ask for a kundli directly?**
+Yes. Any client that supports remote MCP over streamable HTTP (Claude.ai, Claude Desktop, Claude Code, Cursor, VS Code) can call the kundli and panchang tools from a plain-language prompt. A client that only starts local servers can run `divineapi-indian-astrology-mcp` over stdio (see Self-hosting).
 
-MIT License — see [LICENSE](LICENSE) for details.
+**Why does my client list more Vedic tools than the table?**
+The table is counted from this repository's `server.py` and leaves out the 5 KP tools for now. The hosted server and the PyPI package can be newer than this code.
 
----
+**Which ayanamsa and zodiac does it use?**
+Sidereal zodiac with the Lahiri ayanamsa, calculated with Swiss Ephemeris.
 
-## 🏢 About Divine API
+**Can it draw charts?**
+Yes. Chart tools (`divine_get_horoscope_chart`, `divine_get_sub_planet_chart`, the Lal Kitab and matching chart tools) return an SVG plus a base64 image.
 
-[Divine API](https://divineapi.com) is a leading astrology technology company based in New Delhi, offering comprehensive Astrology, Kundali, Horoscope, Tarot, and Numerology APIs for businesses worldwide.
+**I want the REST API, not MCP.**
+Call the same Vedic endpoints over plain HTTP with the [kundli-api](https://github.com/DivineAPI/kundli-api) and [panchang-api](https://github.com/DivineAPI/panchang-api) quickstarts or the [API reference](https://developers.divineapi.com/indian-api). SDKs: `pip install divineapi`, `npm install divineapi`, `composer require divineapi/divineapi`.
 
-**Contact**: admin@divineapi.com
+## Related repos
+
+| Repo | What it is |
+|---|---|
+| [kundli-api](https://github.com/DivineAPI/kundli-api) | Kundli REST API quickstart |
+| [kundli-matching-api](https://github.com/DivineAPI/kundli-matching-api) | Kundli matching (Ashtakoot, Dashakoot) REST API |
+| [lal-kitab-api](https://github.com/DivineAPI/lal-kitab-api) | Lal Kitab REST API |
+| [panchang-api](https://github.com/DivineAPI/panchang-api) | Panchang REST API quickstart |
+| [hindu-festival-api](https://github.com/DivineAPI/hindu-festival-api) | Hindu festival dates REST API |
+| [astrology-api](https://github.com/DivineAPI/astrology-api) | Overview of all DivineAPI domains |
+| [mcp-western-astrology](https://github.com/DivineAPI/mcp-western-astrology) | Western astrology MCP server |
+| [mcp-horoscope-numerology](https://github.com/DivineAPI/mcp-horoscope-numerology) | Horoscope, tarot and numerology MCP server |
+| [divineapi-python](https://github.com/DivineAPI/divineapi-python) | Python SDK (`pip install divineapi`) |
+| [divineapi-node](https://github.com/DivineAPI/divineapi-node) | Node.js / TypeScript SDK (`npm install divineapi`) |
+| [divineapi-php](https://github.com/DivineAPI/divineapi-php) | PHP SDK (`composer require divineapi/divineapi`) |
+
+## Support
+
+- MCP overview: [divineapi.com/mcp](https://divineapi.com/mcp)
+- API reference: [developers.divineapi.com/indian-api](https://developers.divineapi.com/indian-api)
+- Help center: [support.divineapi.com](https://support.divineapi.com)
+- API status: [status.divineapi.com](https://status.divineapi.com)
+
+## License
+
+MIT. See [LICENSE](LICENSE).
