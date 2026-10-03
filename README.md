@@ -2,7 +2,7 @@
 
 ![Vedic Astrology MCP Server by DivineAPI](https://raw.githubusercontent.com/DivineAPI/DivineAPI/main/assets/mcp-indian-astrology.png)
 
-Connect Claude, Cursor, VS Code or any MCP client to DivineAPI's Vedic astrology data. Tools cover Panchang, Kundli charts, dashas, doshas, matchmaking (Ashtakoot and Dashakoot), Lal Kitab, Jaimini and Hindu festival dates, returned as JSON (and SVG for charts).
+Connect Claude, Cursor, VS Code or any Model Context Protocol (MCP) client to DivineAPI's Vedic astrology data. Tools cover Panchang, Kundli charts, dashas, doshas, matchmaking (Ashtakoot and Dashakoot), Lal Kitab, Jaimini and Hindu festival dates, returned as JSON (and SVG for charts).
 
 [![Docs](https://img.shields.io/badge/docs-developers.divineapi.com-blue)](https://developers.divineapi.com/indian-api)
 [![Trial](https://img.shields.io/badge/14--day%20trial-start-green)](https://divineapi.com/start-trial)
@@ -10,6 +10,7 @@ Connect Claude, Cursor, VS Code or any MCP client to DivineAPI's Vedic astrology
 [![PyPI](https://img.shields.io/badge/pypi-divineapi--indian--astrology--mcp-orange)](https://pypi.org/project/divineapi-indian-astrology-mcp/)
 [![Status](https://img.shields.io/badge/status-status.divineapi.com-brightgreen)](https://status.divineapi.com)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/DivineAPI/mcp-indian-astrology)
 
 Hosted server URL:
 
