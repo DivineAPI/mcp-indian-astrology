@@ -1,0 +1,29 @@
+{
+  "name": "divineapi-vedic-astrology",
+  "version": "1.0.0",
+  "description": "Vedic astrology inside Gemini CLI: ask for a kundli, dasha periods, dosha checks, kundli matching or today's panchang, served by DivineAPI.",
+  "mcpServers": {
+    "divineapi-vedic": {
+      "httpUrl": "https://mcp.divineapi.com/indian/mcp",
+      "headers": {
+        "X-Divine-Api-Key": "${DIVINE_API_KEY}",
+        "X-Divine-Auth-Token": "${DIVINE_AUTH_TOKEN}"
+      },
+      "timeout": 60000
+    }
+  },
+  "settings": [
+    {
+      "name": "DivineAPI API key",
+      "description": "From your DivineAPI dashboard (https://divineapi.com).",
+      "envVar": "DIVINE_API_KEY",
+      "sensitive": true
+    },
+    {
+      "name": "DivineAPI auth token",
+      "description": "From your DivineAPI dashboard.",
+      "envVar": "DIVINE_AUTH_TOKEN",
+      "sensitive": true
+    }
+  ]
+}
