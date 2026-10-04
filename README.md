@@ -2,7 +2,9 @@
 
 ![Vedic Astrology MCP Server by DivineAPI](https://raw.githubusercontent.com/DivineAPI/DivineAPI/main/assets/mcp-indian-astrology.png)
 
-Connect Claude, Cursor, VS Code or any Model Context Protocol (MCP) client to DivineAPI's Vedic astrology data. Tools cover Panchang, Kundli charts, dashas, doshas, matchmaking (Ashtakoot and Dashakoot), Lal Kitab, Jaimini and Hindu festival dates, returned as JSON (and SVG for charts).
+The official DivineAPI MCP server for Vedic (Indian) astrology. It lets AI assistants such as Claude, ChatGPT and VS Code agents fetch Panchang, kundli, dasha, dosha and matchmaking data from DivineAPI. Use the hosted server at mcp.divineapi.com, or run this one locally with your DivineAPI API key. Vedic text is available in 8 Indian languages: English (en), Hindi (hi), Bengali (bn), Marathi (ma), Tamil (tm), Telugu (tl), Malayalam (ml) and Kannada (kn). Calculations use the Lahiri ayanamsa. 14-day free trial (credit card required to activate the trial): https://divineapi.com/start-trial
+
+Tools also cover Lal Kitab, Jaimini and Hindu festival dates, returned as JSON (and SVG for charts). Product page: [Vedic astrology API](https://divineapi.com/indian-astrology/vedic-astrology-api).
 
 [![Docs](https://img.shields.io/badge/docs-developers.divineapi.com-blue)](https://developers.divineapi.com/indian-api)
 [![Trial](https://img.shields.io/badge/14--day%20trial-start-green)](https://divineapi.com/start-trial)
@@ -112,26 +114,26 @@ If a client can send only a single bearer token and no custom headers, send `Aut
 
 ## Tool groups
 
-The table lists 99 of the 104 tools in [`server.py`](server.py) (version 2.5.0); the 5 KP tools are listed after the DivineAPI team confirms KP. The hosted server is updated more often and can list more tools; your MCP client always shows the live list.
+The table groups the tools defined in [`server.py`](server.py). The hosted server is updated more often and can offer more tools; your MCP client always shows the live list.
 
-| Group | Tools | What they cover |
-|---|---|---|
-| Panchang | 6 | `divine_get_panchang`, `divine_get_tithi`, `divine_get_nakshatra`, `divine_get_karana`, `divine_get_surya_nakshatra`, `divine_get_yoga_panchang` |
-| Panchang extended | 7 | Choghadiya, Nivas and Shool, Ritu and Anaya, Samvat, Chandrabalam and Tarabalam, other calendars and epoch, sun and moon rise/set |
-| Timings | 3 | Auspicious timings (muhurat), inauspicious timings, Gowri Panchangam |
-| Kundli basics | 9 | Basic astro details, planetary positions, divisional charts (`divine_get_horoscope_chart`: D1, D9, D10 and others, north or south style, SVG), Bhava Kundli, planet analysis, ascendant report, Uday Lagna, Chandramasa, Chandrashtama |
-| Doshas | 4 | Manglik dosha, Kaal Sarpa yoga, Pitra dosha, Sadhe Sati |
-| Dasha | 6 | Vimshottari dasha, Maha / Antar / Pratyantar dasha analysis, Yogini dasha, Kaal Chakra dasha |
-| Yogas and strengths | 8 | Yogas, Nav Pancham yoga, Shadbala, composite friendship, Ghata Chakra, Sudarshana Chakra, Panchak Rahita, gemstone suggestion |
-| Ashtakvarga | 3 | Bhinnashtakvarga, Prasthara Chakra, Sarvashtakavarga |
-| Sub planets (Upagrahas) | 2 | Sub-planet positions, sub-planet chart |
-| Jaimini | 4 | Chara dasha, Karakamsha Lagna, Padas (Arudha), Jaimini planetary positions and karakas |
-| Transits | 6 | Kundli transit from ascendant and from Moon, Grah Gochar, planet combustion, nakshatra and retrograde transits |
-| Matchmaking (Kundli Milan) | 7 | Ashtakoot Milan, Dashakoot Milan, matching Manglik, basic astro, charts, Vimshottari dasha and planetary positions for both people |
-| Festivals | 7 | Festivals by date, by English month, by Hindu month, find a festival, Malayalam, Tamil and Sankranti festivals |
-| Lal Kitab | 16 | Planetary positions, chart, house positions, conjunctions, teva, planet analysis, dasha, planet types, mahadasha and antardasha content, debts, house signification, Varsha Pravesh, varshphal positions, Muntha and chart |
-| Kundli analysis | 6 | Vargottama planets, Bhava Bala, Ashtama Shani, bhava analysis, bhava group predictions, planet remedies |
-| Monthly lists | 5 | Chandramasa list, month nakshatra list, sunrise and sunset list, Surya nakshatra list, tithi list |
+| Group | What they cover |
+|---|---|
+| Panchang | `divine_get_panchang`, `divine_get_tithi`, `divine_get_nakshatra`, `divine_get_karana`, `divine_get_surya_nakshatra`, `divine_get_yoga_panchang` |
+| Panchang extended | Choghadiya, Nivas and Shool, Ritu and Anaya, Samvat, Chandrabalam and Tarabalam, other calendars and epoch, sun and moon rise/set |
+| Timings | Auspicious timings (muhurat), inauspicious timings, Gowri Panchangam |
+| Kundli basics | Basic astro details, planetary positions, divisional charts (`divine_get_horoscope_chart`: D1, D9, D10 and others, north or south style, SVG), Bhava Kundli, planet analysis, ascendant report, Uday Lagna, Chandramasa, Chandrashtama |
+| Doshas | Manglik dosha, Kaal Sarpa yoga, Pitra dosha, Sadhe Sati |
+| Dasha | Vimshottari dasha, Maha / Antar / Pratyantar dasha analysis, Yogini dasha, Kaal Chakra dasha |
+| Yogas and strengths | Yogas, Nav Pancham yoga, Shadbala, composite friendship, Ghata Chakra, Sudarshana Chakra, Panchak Rahita, gemstone suggestion |
+| Ashtakvarga | Bhinnashtakvarga, Prasthara Chakra, Sarvashtakavarga |
+| Sub planets (Upagrahas) | Sub-planet positions, sub-planet chart |
+| Jaimini | Chara dasha, Karakamsha Lagna, Padas (Arudha), Jaimini planetary positions and karakas |
+| Transits | Kundli transit from ascendant and from Moon, Grah Gochar, planet combustion, nakshatra and retrograde transits |
+| Matchmaking (Kundli Milan) | Ashtakoot Milan, Dashakoot Milan, matching Manglik, basic astro, charts, Vimshottari dasha and planetary positions for both people |
+| Festivals | Festivals by date, by English month, by Hindu month, find a festival, Malayalam, Tamil and Sankranti festivals |
+| Lal Kitab | Planetary positions, chart, house positions, conjunctions, teva, planet analysis, dasha, planet types, mahadasha and antardasha content, debts, house signification, Varsha Pravesh, varshphal positions, Muntha and chart |
+| Kundli analysis | Vargottama planets, Bhava Bala, Ashtama Shani, bhava analysis, bhava group predictions, planet remedies |
+| Monthly lists | Chandramasa list, month nakshatra list, sunrise and sunset list, Surya nakshatra list, tithi list |
 
 All tools are read-only (`readOnlyHint: true`) and each tool call makes one request to the DivineAPI REST API on the `astroapi-1`, `astroapi-2`, `astroapi-3` or `astroapi-8` host.
 
@@ -221,8 +223,8 @@ Yes. Each panchang, kundli or matching tool sends your API key and auth token to
 **Can Claude Desktop or Cursor ask for a kundli directly?**
 Yes. Any client that supports remote MCP over streamable HTTP (Claude.ai, Claude Desktop, Claude Code, Cursor, VS Code) can call the kundli and panchang tools from a plain-language prompt. A client that only starts local servers can run `divineapi-indian-astrology-mcp` over stdio (see Self-hosting).
 
-**Why does my client list more Vedic tools than the table?**
-The table is counted from this repository's `server.py` and leaves out the 5 KP tools for now. The hosted server and the PyPI package can be newer than this code.
+**Why does my client show Vedic tools that are not in the table?**
+The table follows this repository's `server.py`. The hosted server and the PyPI package can be newer than this code, and your client always shows the live list.
 
 **Which ayanamsa and zodiac does it use?**
 Sidereal zodiac with the Lahiri ayanamsa, calculated with Swiss Ephemeris.
