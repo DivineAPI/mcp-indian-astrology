@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.13.0] - 2026-11-09
+
+### Added
+
+**New tool: `divine_get_graha_drishti` (DV-619).** Wraps the Graha Drishti API, `POST /indian-api/v1/aspects` on astroapi-3 (backend PR Dinesh-Gahlot/astroapi-3.divineapi.com#40, parent ticket DV-608; Vedic Ananta plan). It takes the standard birth details (`KundliInput`) plus the optional `node_type` (`meannode`/`truenode`); an invalid `node_type` is a tool error (`isError: true`).
+
+Parashari drishti on whole-sign houses counted from the Lagna: every graha aspects the 7th house from itself; Mars also the 4th and 8th, Jupiter the 5th and 9th, Saturn the 3rd and 10th, and Rahu and Ketu the 5th and 9th. Only the nine grahas Sun to Ketu are covered. The response has `planets` (name, sign, house, `aspects` with the aspect number, target house, its sign and the planets in it, and `aspected_by`) and `houses` (house, sign, planets, `aspected_by`).
+
+This is a different system from the KP aspects added to `divine_get_kp_planetary_sub` in 2.12.0, which measure aspects in degrees with an orb and give Rahu and Ketu none. The tool description says so, to keep a model from mixing them up.
+
+Verified live on 2026-11-09: `node_type` is honoured by the backend (near Rahu's 2025-05-18 sign change, `truenode` puts Rahu in Pisces where `meannode` puts it in Aquarius), even though the docs page does not list it. `lan` is accepted but ignored, so names always come back in English; the description says so. Tool count: 129 -> 130.
+
 ## [2.12.0] - 2026-11-09
 
 ### Changed

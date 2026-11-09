@@ -122,7 +122,7 @@ The table groups the tools defined in [`server.py`](server.py). The hosted serve
 | Panchang extended | Choghadiya, Nivas and Shool, Ritu and Anaya, Samvat, Chandrabalam and Tarabalam, other calendars and epoch, sun and moon rise/set |
 | Timings | Auspicious timings (muhurat), inauspicious timings, Gowri Panchangam |
 | Event muhurats | Marriage, business start, house entering, foundation laying, property purchase and vehicle purchase muhurats, Hora, Do Ghati, Jain Pachakkhan |
-| Kundli basics | Basic astro details, planetary positions, divisional charts (`divine_get_horoscope_chart`: D1, D9, D10 and others, north or south style, SVG), Bhava Kundli, planet analysis, ascendant report, Uday Lagna, Chandramasa, Chandrashtama |
+| Kundli basics | Basic astro details, planetary positions, divisional charts (`divine_get_horoscope_chart`: D1, D9, D10 and others, north or south style, SVG), Bhava Kundli, planet analysis, Graha Drishti (Vedic aspects), ascendant report, Uday Lagna, Chandramasa, Chandrashtama |
 | Doshas | Manglik dosha, Kaal Sarpa yoga, Pitra dosha, Sadhe Sati |
 | Dasha | Vimshottari dasha, Maha / Antar / Pratyantar dasha analysis, Yogini dasha, Kaal Chakra dasha |
 | Yogas and strengths | Yogas, Nav Pancham yoga, Shadbala, composite friendship, Ghata Chakra, Sudarshana Chakra, Panchak Rahita, gemstone suggestion, Rudraksha suggestion |

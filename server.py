@@ -1176,6 +1176,37 @@ async def divine_get_chandrashtama(params: ChandrashtamaInput, ctx: Context) -> 
     return await _call_divine_api("/indian-api/v2/chandrashtama", payload, api_key=api_key, auth_token=auth_token)
 
 
+@mcp.tool(name="divine_get_graha_drishti", annotations=TOOL_ANNOTATIONS)
+async def divine_get_graha_drishti(
+    params: KundliInput = Field(..., description="Birth details"),
+    node_type: str | None = Field(default=None, description="Rahu/Ketu calculation method: 'meannode' (default) or 'truenode'"),
+    ctx: Context = None,
+) -> str:
+    """Get Graha Drishti (Vedic planetary aspects) for a birth chart: which planets aspect which houses and planets.
+
+    Parashari drishti on whole-sign houses counted from the Lagna. Every
+    graha aspects the 7th house from itself; Mars also the 4th and 8th,
+    Jupiter the 5th and 9th, Saturn the 3rd and 10th, and Rahu and Ketu the
+    5th and 9th. Covers the nine grahas Sun to Ketu; Uranus, Neptune and
+    Pluto have no drishti and are left out.
+
+    Returns planets (name, sign, house, aspects: each with the aspect
+    number, target house, its sign and the planets in it; aspected_by:
+    planet and aspect number) and houses (house, sign, planets in it,
+    aspected_by). Names are returned in English regardless of lan.
+    node_type only changes where Rahu and Ketu fall.
+
+    This is not the KP aspect data in divine_get_kp_planetary_sub, which
+    measures aspects in degrees with an orb and gives Rahu and Ketu none.
+    """
+    payload = _kundli_payload(params)
+    err = _apply_node_type(payload, node_type)
+    if err:
+        raise ToolError(err)
+    api_key, auth_token = _get_credentials(ctx)
+    return await _call_divine_api("/indian-api/v1/aspects", payload, api_key=api_key, auth_token=auth_token)
+
+
 # ══════════════════════════════════════════════
 # DOSHAS — astroapi-3.divineapi.com
 # ══════════════════════════════════════════════
