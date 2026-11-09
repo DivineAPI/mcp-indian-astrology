@@ -121,17 +121,20 @@ The table groups the tools defined in [`server.py`](server.py). The hosted serve
 | Panchang | `divine_get_panchang`, `divine_get_tithi`, `divine_get_nakshatra`, `divine_get_karana`, `divine_get_surya_nakshatra`, `divine_get_yoga_panchang` |
 | Panchang extended | Choghadiya, Nivas and Shool, Ritu and Anaya, Samvat, Chandrabalam and Tarabalam, other calendars and epoch, sun and moon rise/set |
 | Timings | Auspicious timings (muhurat), inauspicious timings, Gowri Panchangam |
+| Event muhurats | Marriage, business start, house entering, foundation laying, property purchase and vehicle purchase muhurats, Hora, Do Ghati, Jain Pachakkhan |
 | Kundli basics | Basic astro details, planetary positions, divisional charts (`divine_get_horoscope_chart`: D1, D9, D10 and others, north or south style, SVG), Bhava Kundli, planet analysis, ascendant report, Uday Lagna, Chandramasa, Chandrashtama |
 | Doshas | Manglik dosha, Kaal Sarpa yoga, Pitra dosha, Sadhe Sati |
 | Dasha | Vimshottari dasha, Maha / Antar / Pratyantar dasha analysis, Yogini dasha, Kaal Chakra dasha |
-| Yogas and strengths | Yogas, Nav Pancham yoga, Shadbala, composite friendship, Ghata Chakra, Sudarshana Chakra, Panchak Rahita, gemstone suggestion |
+| Yogas and strengths | Yogas, Nav Pancham yoga, Shadbala, composite friendship, Ghata Chakra, Sudarshana Chakra, Panchak Rahita, gemstone suggestion, Rudraksha suggestion |
 | Ashtakvarga | Bhinnashtakvarga, Prasthara Chakra, Sarvashtakavarga |
 | Sub planets (Upagrahas) | Sub-planet positions, sub-planet chart |
-| Jaimini | Chara dasha, Karakamsha Lagna, Padas (Arudha), Jaimini planetary positions and karakas |
+| Jaimini | Chara dasha, Karakamsha Lagna, Swamsa chart, Padas (Arudha), Jaimini planetary positions and karakas |
+| KP (Krishnamurti Paddhati) | KP planetary positions, cuspal chart, cuspal sub lords and planetary sub lords (with KP conjunctions and aspects), planetary-cuspal significator table |
 | Transits | Kundli transit from ascendant and from Moon, Grah Gochar, planet combustion, nakshatra and retrograde transits |
 | Matchmaking (Kundli Milan) | Ashtakoot Milan, Dashakoot Milan, matching Manglik, basic astro, charts, Vimshottari dasha and planetary positions for both people |
 | Festivals | Festivals by date, by English month, by Hindu month, find a festival, Malayalam, Tamil and Sankranti festivals |
 | Lal Kitab | Planetary positions, chart, house positions, conjunctions, teva, planet analysis, dasha, planet types, mahadasha and antardasha content, debts, house signification, Varsha Pravesh, varshphal positions, Muntha and chart |
+| Varshphal (Tajika annual chart) | Varsha Pravesh, basic details, annual chart, planetary positions and strengths, Muntha, Panchadhikari, Sahams, Tajika aspects, yogas, Tri-Pataki Chakra, Mudda, Patyanini and Yogini dashas |
 | Kundli analysis | Vargottama planets, Bhava Bala, Ashtama Shani, bhava analysis, bhava group predictions, planet remedies |
 | Monthly lists | Chandramasa list, month nakshatra list, sunrise and sunset list, Surya nakshatra list, tithi list |
 

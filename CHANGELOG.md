@@ -1,5 +1,96 @@
 # Changelog
 
+## [2.12.0] - 2026-11-09
+
+### Changed
+
+**`divine_get_kp_cuspal_sub` and `divine_get_kp_planetary_sub` now use the v2 endpoints (DV-589).** Both tools moved from `/indian-api/v1/kp/...` to `/indian-api/v2/kp/...` on astroapi-3 (backend PR Dinesh-Gahlot/astroapi-3.divineapi.com#35, parent ticket DV-579). Parameters are unchanged, and `node_type` and `lan` work on v2 as they did on v1.
+
+v2 adds KP aspect data to each row of `table_data`. Nothing existing is removed or renamed:
+
+| Tool | New fields per row |
+| --- | --- |
+| `divine_get_kp_cuspal_sub` | `aspected_by`: the planets aspecting that cusp |
+| `divine_get_kp_planetary_sub` | `conjunction`: planets within 5 degrees; `aspected_by`: planets aspecting it; `aspect_to`: `{planets, houses}` it aspects |
+
+KP aspects are Vedic aspects measured by degree. Every planet aspects the 7th (180 degrees); Mars also the 4th and 8th, Jupiter the 5th and 9th, and Saturn the 3rd and 10th. Rahu and Ketu cast no aspect. The orb is 8 degrees (Moon 12; Uranus, Neptune and Pluto 5). With `lan` other than `en`, the planet names in these lists are translated; house numbers are not.
+
+The v2 handler's nakshatra spelling fix ("Mrigshira" to "Mrigashira", "Shravana" to "Shravan") applies only to `cuspal`, which `divine_get_kp_cuspal` already called on v2. The significator table stays on v1: v2 does not serve it. Tool count unchanged at 129.
+
+## [2.11.0] - 2026-10-01
+
+### Added
+
+**New tool: `divine_get_jaimini_swamsa_chart` (DV-460).** Wraps the new `/indian-api/v1/swamsa-chart` endpoint (astroapi-3, backend PR Dinesh-Gahlot/astroapi-3.divineapi.com#23). The Jaimini Swamsa chart is the Navamsa (D9) chart's planets recast into houses with the Karakamsha sign (the Atmakaraka's D9 sign) as house 1. It takes the standard birth details (`KundliInput`, including `lan`) plus the optional `node_type` (`meannode`/`truenode`) that its sibling `divine_get_jaimini_karakamsha_lagna` also exposes, and returns `atmakaraka`, `swamsha_sign` / `swamsha_sign_no`, `lagnamsha_sign` / `lagnamsha_sign_no` (the D9 Ascendant's sign), `svg` and `base64_image`. With `lan="hi"` the names come back translated; the sign numbers do not change. `node_type=truenode` only moves Rahu and Ketu in the drawn chart (the Atmakaraka is one of the 7 planets Sun to Saturn, so the karaka and both signs stay the same); an invalid value comes back as a tool error (`isError: true`).
+
+It is a sibling of `divine_get_jaimini_karakamsha_lagna`, not a duplicate: that tool recasts the natal (D1) planets around the same Karakamsha sign, this one recasts the D9 planets. The route is top-level `/indian-api/v1/swamsa-chart`, not under `/jaimini-astrology/`. Endpoint live-verified (success=1) before adding, and the tool live-tested over stdio after. Tool count: 128 -> 129.
+
+## [2.10.1] - 2026-09-21
+
+### Fixed
+
+**`shraavana` festivals now use the v3 endpoint (DV-374).** In v2, four of the sixteen shraavana festivals — `hariyaali_teej`, `gayatri_jayanti`, `narali_purnima` and `sanskrit_divas` — returned their date under `"dates"` (plural) instead of `"date"`, which no other festival and no other Hindu month does. v3 corrects exactly those four. Everything else in the response is identical, and v3 supports `include_name` and `lan` the same way.
+
+`shraavana` is the **only** month with a v3 — all other eleven are v2-only, verified against astroapi-3. The endpoint map now carries the version per month rather than hardcoding `v2` in the URL, so a future month gaining a v3 is a one-word change.
+
+`shraavana_somvaar_vrat` and `mangla_gauri_vrat` still use `"dates"` in v3, and that is **correct** — they fall on every Monday and Tuesday of the month and return four dates as `{"1": ..., "2": ...}`. The v2 bug was single string values mislabelled as plural, not the plural key itself.
+
+## [2.10.0] - 2026-09-17
+
+### Added
+
+**`include_name` and `lan` on all six festival tools (DV-352).** The festival APIs gained two optional parameters; none of the MCP's festival tools could pass either, because the Pydantic models use `extra="forbid"`.
+
+`include_name` adds a human-readable `name` to every festival (`"Anant Chaturdashi"` instead of only the raw key `anant_chaturdashi`) — the gap the client reported in DV-338. `lan` localises those names into eight languages.
+
+Affected tools: `divine_get_festivals_by_date`, `divine_get_english_calendar_festivals`, `divine_get_malayalam_festivals`, `divine_get_tamil_festivals`, `divine_get_sankranti_festivals`, `divine_get_festivals_by_month`.
+
+**`include_name` defaults to `YES` in the MCP**, which differs from the REST API default of `NO`. The API default exists to protect existing REST consumers from a new response field; an MCP result is read by a model, where an extra field cannot break a parser and raw keys like `chhath_puja` are actively worse. Pass `include_name="NO"` for the old shape.
+
+**Five of the six festival tools previously had no `lan` parameter at all**, so festivals could not be localised through the MCP regardless of this change. They do now.
+
+### Fixed
+
+**`PanchangInput.lan` advertised seven language codes the API rejects.** The description read `en, hi, ta, te, kn, ml, bn, gu, mr, pa, or, ur`. Verified 2026-09-17 against astroapi-1 `/find-panchang` and astroapi-3 (every festival endpoint): the APIs accept **`en, hi, bn, ma, tm, tl, ml, kn`** and reject `ta`, `te`, `mr`, `gu`, `pa`, `or`, `ur` with `"Please enter valid language"`.
+
+These are deliberately **not** ISO 639-1 codes — Marathi is `ma` not `mr`, Tamil `tm` not `ta`, Telugu `tl` not `te`. The old description steered callers to codes that always failed. Invalid codes are now rejected locally with the correct list instead of costing a round trip.
+
+## [2.9.1] - 2026-09-17
+
+### Fixed
+
+**Pinned `mcp[cli]` to `<2`.** The dependency was `>=1.2.0` with no upper bound. mcp 2.x renamed `FastMCP` to `MCPServer` and removed `mcp.server.fastmcp`, which `server.py` imports at module level, so any image rebuild would have installed mcp 2.x and crashed the container on startup. Production runs 1.28.1. No behaviour change — this only prevents a future rebuild from breaking.
+
+## [Unreleased]
+
+### Fixed
+
+`divine_get_planet_retrograde_transit` now accepts all **8** planets the live API supports (mercury, venus, mars, jupiter, saturn, uranus, neptune, pluto) instead of the 5 it declared, and validates the path selector against a new `VALID_RETROGRADE_PLANETS` set. Previously it under-declared by 3 (uranus/neptune/pluto), blocking valid calls, and had no validation at all, so rahu/ketu were passed through and the backend answered with an unhandled HTTP 500 instead of a clean error. Live-verified 2026-07-22 during the path-selector sweep.
+
+## [2.8.0] - 2026-07-21
+
+### Added
+
+**Varshphal (annual chart / Tajika) suite - 14 new tools** wrapping `/indian-api/v1/varshphal/*` (astroapi-3): varsha_pravesh, basic_astro_details, planetary_positions, horoscope_chart (D1..D60 chart id in the path), tajika_aspect, muntha, panchadhikari, tri_pataki_chakra, mudda_dasha, yogini_dasha, patyanini_dasha, planetary_strengths, sahams, yogas. Each takes birth details (KundliInput) + `varshphal_year`. Distinct from the existing Lal Kitab varshphal tools (`/lal-kitab/varshphal/*`). All live-verified (success=1). Tool count: 114 -> 128.
+
+## [2.7.0] - 2026-07-21
+
+### Added
+
+**New tool: `divine_get_rudraksha_suggestion`** wrapping `/indian-api/v1/rudraksha-suggestion` (astroapi-3). Takes standard birth details (KundliInput) and returns the recommended life, lucky, and dasha Rudraksha beads. Endpoint live-verified (success=1) before adding. Tool count: 113 -> 114.
+
+## [2.6.0] - 2026-07-21
+
+### Added
+
+**Muhurat Finder API - 9 new tools** wrapping `/indian-api/v1/muhurat/*` (astroapi-3): `divine_get_muhurat_marriage`, `_house_entering`, `_vehicle_purchase`, `_property_purchase`, `_business_start`, `_foundation_laying` (month-scoped: month + location + lan), plus `_do_ghati`, `_hora`, `_jain_pachakkhan` (date-scoped: day + location). Every endpoint live-verified (success=1) before adding. Tool count: 104 -> 113.
+
+### Fixed
+
+`divine_get_grah_gochar` now accepts the three outer planets (uranus, neptune, pluto) in addition to the nine grahas, matching the live API (verified: all 12 planets return success=1). A new `VALID_TRANSIT_PLANETS` set gates this tool only; the shared `VALID_PLANETS` (9 grahas) is unchanged so the Vedic dasha / analysis tools stay restricted. The planet field description now lists all 12.
+
+`divine_get_planet_nakshatra_transit` now validates its planet against `VALID_NAKSHATRA_TRANSIT_PLANETS` (the 10 supported: classical + uranus/neptune/pluto) and rejects rahu/ketu with a clear message. Previously it had no validation and passed the nodes straight through to the backend, which returns HTTP 500 for them (live-verified 2026-07-21). The field description was also corrected: it wrongly listed rahu/ketu and omitted the three outer planets.
+
 ## [2.5.0] - 2026-07-10
 
 ### Added
