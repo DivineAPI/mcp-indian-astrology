@@ -137,6 +137,7 @@ The table groups the tools defined in [`server.py`](server.py). The hosted serve
 | Varshphal (Tajika annual chart) | Varsha Pravesh, basic details, annual chart, planetary positions and strengths, Muntha, Panchadhikari, Sahams, Tajika aspects, yogas, Tri-Pataki Chakra, Mudda, Patyanini and Yogini dashas |
 | Kundli analysis | Vargottama planets, Bhava Bala, Ashtama Shani, bhava analysis, bhava group predictions, planet remedies |
 | Monthly lists | Chandramasa list, month nakshatra list, sunrise and sunset list, Surya nakshatra list, tithi list |
+| Location | Place search (`divine_search_location`): latitude, longitude and timezone for a place name, to fill the birth-chart inputs |
 
 All tools are read-only (`readOnlyHint: true`) and each tool call makes one request to the DivineAPI REST API on the `astroapi-1`, `astroapi-2`, `astroapi-3` or `astroapi-8` host.
 
