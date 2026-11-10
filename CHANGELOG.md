@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.15.0] - 2026-11-10
+
+### Added
+
+**`weekday` option on four tools (DV-469).** `divine_get_basic_astro_details`, `divine_get_varshphal_varsha_pravesh`, `divine_get_varshphal_basic_astro_details` and `divine_get_lal_kitab_varsha_pravesh` take an optional `weekday`: `civil` or `vedic` (backend PR Dinesh-Gahlot/astroapi-3.divineapi.com#24, parent ticket DV-453).
+
+- `civil` (the API default) changes the day at midnight, like a calendar.
+- `vedic` changes it at local sunrise, so a moment between midnight and sunrise still belongs to the previous day.
+
+It changes `vaar` in the two basic-astro-details tools and `weekday` in the two Varsha Pravesh tools; nothing else in the response moves. Left out, nothing is sent and the API uses `civil`, so existing calls return what they did before. Case doesn't matter; any other value is a tool error (`isError: true`) raised before the API is called.
+
+Verified live on 2026-11-10 (Delhi, born 1990-05-24 04:30, a Thursday, sunrise 05:25): `vaar` is Thursday with `civil` and Wednesday with `vedic`; the 2025 Varsha Pravesh (2025-05-24 03:54) is Saturday with `civil` and Friday with `vedic`. The Lal Kitab tool could not be run live, because the test account has no Lal Kitab plan. Tool count unchanged at 131.
+
 ## [2.14.0] - 2026-11-09
 
 ### Added
