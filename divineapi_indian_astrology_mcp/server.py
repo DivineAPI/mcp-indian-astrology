@@ -369,6 +369,15 @@ VALID_DASHA_TYPES = {
 
 VALID_NODE_TYPES = {"meannode", "truenode"}
 
+VALID_WEEKDAY_MODES = {"civil", "vedic"}
+
+WEEKDAY_HINT = (
+    "How the weekday (vaar) is counted: 'civil' (default) changes the day at "
+    "midnight, like a calendar; 'vedic' changes it at local sunrise, so a moment "
+    "between midnight and sunrise still belongs to the previous day "
+    "(e.g. 04:30 on a Thursday is Wednesday). Only matters before sunrise."
+)
+
 VALID_MONTH_TYPES = {"amanta", "purnimanta"}
 
 VALID_CHART_STYLES = {"north", "south"}
@@ -778,6 +787,19 @@ def _apply_node_type(payload: dict, node_type: str | None) -> str | None:
     return None
 
 
+def _apply_weekday(payload: dict, weekday: str | None) -> None:
+    """Validate optional weekday ('civil' or 'vedic') and add it to the payload.
+
+    Raises ToolError on invalid input. Left out of the payload when not given,
+    so the API applies its own default ('civil').
+    """
+    if weekday:
+        wd = weekday.lower().strip()
+        if wd not in VALID_WEEKDAY_MODES:
+            raise ToolError(f"Error: Invalid weekday '{weekday}'. Must be one of: {', '.join(sorted(VALID_WEEKDAY_MODES))}")
+        payload["weekday"] = wd
+
+
 def _apply_chart_style(
     payload: dict,
     chart_type: str | None = None,
@@ -1003,14 +1025,22 @@ async def divine_get_gowri_panchangam(params: PanchangInput, ctx: Context) -> st
 
 
 @mcp.tool(name="divine_get_basic_astro_details", annotations=TOOL_ANNOTATIONS)
-async def divine_get_basic_astro_details(params: KundliInput, ctx: Context) -> str:
+async def divine_get_basic_astro_details(
+    params: KundliInput = Field(..., description="Birth details"),
+    weekday: str | None = Field(default=None, description=WEEKDAY_HINT),
+    ctx: Context = None,
+) -> str:
     """Get basic astrological details for a person based on their birth data.
 
     Returns tithi, nakshatra, rashi, sun sign, moon sign, yoga, karana,
-    varna, vashya, yoni, gana, nadi, ayanamsha, and more.
+    varna, vashya, yoni, gana, nadi, ayanamsha, and more. vaar is the
+    weekday of birth; with weekday='vedic' a birth before sunrise gets the
+    previous day's vaar.
     """
+    payload = _kundli_payload(params)
+    _apply_weekday(payload, weekday)
     api_key, auth_token = _get_credentials(ctx)
-    return await _call_divine_api("/indian-api/v3/basic-astro-details", _kundli_payload(params), api_key=api_key, auth_token=auth_token)
+    return await _call_divine_api("/indian-api/v3/basic-astro-details", payload, api_key=api_key, auth_token=auth_token)
 
 
 @mcp.tool(name="divine_get_planetary_positions", annotations=TOOL_ANNOTATIONS)
@@ -2586,15 +2616,18 @@ async def divine_get_lal_kitab_house_signification(
 async def divine_get_lal_kitab_varsha_pravesh(
     varshphal_year: str = Field(..., description="Year for the annual (varshphal) chart (e.g., '2026')"),
     params: KundliInput = Field(..., description="Birth details"),
+    weekday: str | None = Field(default=None, description=WEEKDAY_HINT),
     ctx: Context = None,
 ) -> str:
     """Get the Lal Kitab Varsha Pravesh (annual chart entry) for a chosen year.
 
     Returns the moment the varshphal year begins for the native and the
-    entry chart details.
+    entry chart details. weekday is the day of that moment; with
+    weekday='vedic' a Varsha Pravesh before sunrise gets the previous day.
     """
-    api_key, auth_token = _get_credentials(ctx)
     payload = {**_kundli_payload(params), "varshphal_year": varshphal_year.strip()}
+    _apply_weekday(payload, weekday)
+    api_key, auth_token = _get_credentials(ctx)
     return await _call_divine_api("/indian-api/v1/lal-kitab/varshphal/varsha-pravesh", payload, api_key=api_key, auth_token=auth_token)
 
 
@@ -3080,11 +3113,18 @@ async def divine_get_rudraksha_suggestion(params: KundliInput, ctx: Context) -> 
 async def divine_get_varshphal_varsha_pravesh(
     varshphal_year: str = Field(..., description="Year for the annual (varshphal) chart (e.g., '2024')"),
     params: KundliInput = Field(..., description="Birth details"),
+    weekday: str | None = Field(default=None, description=WEEKDAY_HINT),
     ctx: Context = None,
 ) -> str:
-    """Get the Varshphal Varsha Pravesh (annual chart) for the given year and birth data."""
-    api_key, auth_token = _get_credentials(ctx)
+    """Get the Varshphal Varsha Pravesh (annual chart) for the given year and birth data.
+
+    Returns varshphal_year, age, varsha_pravesh (the moment the year begins)
+    and weekday; with weekday='vedic' a Varsha Pravesh before sunrise gets
+    the previous day.
+    """
     payload = {**_kundli_payload(params), "varshphal_year": varshphal_year.strip()}
+    _apply_weekday(payload, weekday)
+    api_key, auth_token = _get_credentials(ctx)
     return await _call_divine_api("/indian-api/v1/varshphal/varsha-pravesh", payload, api_key=api_key, auth_token=auth_token)
 
 
@@ -3092,11 +3132,17 @@ async def divine_get_varshphal_varsha_pravesh(
 async def divine_get_varshphal_basic_astro_details(
     varshphal_year: str = Field(..., description="Year for the annual (varshphal) chart (e.g., '2024')"),
     params: KundliInput = Field(..., description="Birth details"),
+    weekday: str | None = Field(default=None, description=WEEKDAY_HINT),
     ctx: Context = None,
 ) -> str:
-    """Get the Varshphal Basic Astro Details (annual chart) for the given year and birth data."""
-    api_key, auth_token = _get_credentials(ctx)
+    """Get the Varshphal Basic Astro Details (annual chart) for the given year and birth data.
+
+    vaar is the weekday of the Varsha Pravesh moment; with weekday='vedic'
+    a moment before sunrise gets the previous day's vaar.
+    """
     payload = {**_kundli_payload(params), "varshphal_year": varshphal_year.strip()}
+    _apply_weekday(payload, weekday)
+    api_key, auth_token = _get_credentials(ctx)
     return await _call_divine_api("/indian-api/v1/varshphal/basic-astro-details", payload, api_key=api_key, auth_token=auth_token)
 
 
