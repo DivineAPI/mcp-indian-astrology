@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "divineapi-indian-astrology-mcp"
-version = "2.5.0"
+version = "2.14.0"
 description = "Official MCP server for Divine API's Indian/Vedic Astrology services — Panchang, Kundli, Matchmaking, Festivals"
 readme = "README.md"
 license = "MIT"
@@ -28,7 +28,10 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 dependencies = [
-    "mcp[cli]>=1.2.0",
+    # Pinned <2: mcp 2.x renamed FastMCP -> MCPServer and removed
+    # mcp.server.fastmcp, which this server imports. Unpinned, a rebuild
+    # installs 2.x and the container crashes on import. Prod runs 1.28.1.
+    "mcp[cli]>=1.2.0,<2",
     "httpx>=0.27.0",
     "pydantic>=2.0.0",
     "pyjwt>=2.0.0",
