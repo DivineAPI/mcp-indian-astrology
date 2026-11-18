@@ -188,7 +188,7 @@ _SERVER_INSTRUCTIONS = """DivineAPI Indian (Vedic) astrology: Panchang, Kundli, 
 
 Input conventions: send dates as separate day, month, year fields (plus hour, min, sec for birth charts); place is a plain city string (the form key is lowercase 'place'); lat and lon are decimals; tzone is a decimal UTC offset (e.g. 5.5 for IST). Birth-chart tools need full birth details; panchang and festival tools need only date and place. If you only have a place name, call divine_search_location to get its lat, lon and timezone.
 
-Chaining: call divine_get_vimshottari_dasha to find the active dasha periods, then interpret a period with divine_get_maha_dasha_analysis, divine_get_antar_dasha_analysis, or divine_get_pratyantar_dasha_analysis (those need no birth data). The Lal Kitab mahadasha and antardasha content tools pair up (the antardasha must be valid for its mahadasha).
+Chaining: call divine_get_vimshottari_dasha to find the active dasha periods, then interpret a period with divine_get_maha_dasha_analysis, divine_get_antar_dasha_analysis, or divine_get_pratyantar_dasha_analysis (those need no birth data). The Lal Kitab mahadasha and antardasha content tools pair up (the antardasha must be valid for its mahadasha). For a KP Prashna (horary) question, call divine_get_kp_prashna_instant_questions to get the houses that answer it, then divine_get_kp_prashna_chart with the querent's number (1-249) and the moment and place the question is asked; read those houses in the chart's significators and current_dasha. The API gives no yes/no verdict.
 
 Output: chart tools return an SVG plus a base64 image. Failures come back as errors (isError true) with the accepted values listed, so on a validation error, correct the input and retry."""
 
@@ -378,6 +378,12 @@ WEEKDAY_HINT = (
     "(e.g. 04:30 on a Thursday is Wednesday). Only matters before sunrise."
 )
 
+# KP Prashna: the API accepts 'other' as well (gender has no effect on a horary chart).
+VALID_PRASHNA_GENDERS = {"male", "female", "other"}
+
+# How much of the 819-period KP Prashna dasha_timeline to return.
+VALID_PRASHNA_DASHA_DEPTHS = ("current", "mahadasha", "antardasha", "full")
+
 VALID_MONTH_TYPES = {"amanta", "purnimanta"}
 
 VALID_CHART_STYLES = {"north", "south"}
@@ -558,6 +564,33 @@ class UdayLagnaInput(BaseModel):
     hour: str | None = Field(default=None, description="Deprecated: ignored by this endpoint. Accepted for backward compatibility, not sent to the API.")
     min: str | None = Field(default=None, description="Deprecated: ignored by this endpoint. Accepted for backward compatibility, not sent to the API.")
     sec: str | None = Field(default=None, description="Deprecated: ignored by this endpoint. Accepted for backward compatibility, not sent to the API.")
+
+
+class PrashnaInput(BaseModel):
+    """When and where a KP Prashna (horary) question is asked. These are not birth details."""
+
+    model_config = ConfigDict(str_strip_whitespace=True, validate_assignment=True, extra="forbid")
+
+    day: str = Field(..., description="Day the question is asked (e.g., '12')", min_length=1, max_length=2)
+    month: str = Field(..., description="Month the question is asked (e.g., '10')", min_length=1, max_length=2)
+    year: str = Field(..., description="Year the question is asked (e.g., '2026')", min_length=4, max_length=4)
+    hour: str = Field(..., description="Hour the question is asked, 24h format (e.g., '10')", min_length=1, max_length=2)
+    min: str = Field(..., description="Minute the question is asked (e.g., '30')", min_length=1, max_length=2)
+    sec: str = Field(default="0", description="Second (e.g., '0')", max_length=2)
+    place: str = Field(..., description="Place where the question is asked (e.g., 'New Delhi')", min_length=1, max_length=200)
+    lat: str = Field(..., description="Latitude of that place (e.g., '28.6139')")
+    lon: str = Field(..., description="Longitude of that place (e.g., '77.2090')")
+    tzone: str = Field(..., description="UTC offset at that place on that date (e.g., '5.5' for IST)")
+    full_name: str = Field(default="Querent", description="Querent's name. The API requires it but does not use it in the calculation (default 'Querent')", min_length=1, max_length=200)
+    gender: str = Field(default="other", description="Querent's gender: 'male', 'female' or 'other'. The API requires it but it has no effect on the chart (default 'other')")
+
+    @field_validator("gender")
+    @classmethod
+    def validate_gender(cls, v: str) -> str:
+        v = v.lower().strip()
+        if v not in VALID_PRASHNA_GENDERS:
+            raise ValueError(f"Gender must be 'male', 'female' or 'other', got '{v}'")
+        return v
 
 
 # ──────────────────────────────────────────────
@@ -767,6 +800,23 @@ def _month_payload(params: MonthInput) -> dict:
     return {
         "month": params.month,
         "year": params.year,
+        "place": params.place,
+        "lat": params.lat,
+        "lon": params.lon,
+        "tzone": params.tzone,
+    }
+
+
+def _prashna_payload(params: PrashnaInput) -> dict:
+    return {
+        "full_name": params.full_name,
+        "day": params.day,
+        "month": params.month,
+        "year": params.year,
+        "hour": params.hour,
+        "min": params.min,
+        "sec": params.sec,
+        "gender": params.gender,
         "place": params.place,
         "lat": params.lat,
         "lon": params.lon,
@@ -1844,6 +1894,133 @@ async def divine_get_kp_planetary_positions(
         return err
     api_key, auth_token = _get_credentials(ctx)
     return await _call_divine_api("/indian-api/v2/kp/planetary-positions", payload, api_key=api_key, auth_token=auth_token)
+
+
+# ══════════════════════════════════════════════
+# KP PRASHNA (HORARY) — astroapi-3.divineapi.com
+# ══════════════════════════════════════════════
+
+
+@mcp.tool(name="divine_get_kp_prashna_instant_questions", annotations=TOOL_ANNOTATIONS)
+async def divine_get_kp_prashna_instant_questions(ctx: Context = None) -> str:
+    """List the KP Prashna (horary) question categories and the houses that answer each one.
+
+    A fixed reference list; it takes no input. Each entry has a key (e.g.
+    'marriage', 'job', 'health', 'property', 'lost_object'), the question
+    text and house_hint, the houses classically read for that question
+    (marriage: 2, 7 and 11). Call it before divine_get_kp_prashna_chart to
+    know which houses to read in that chart. KP Prashna works on these
+    fixed categories, not on free-text questions.
+    """
+    api_key, auth_token = _get_credentials(ctx)
+    return await _call_divine_api("/indian-api/v1/kp-prashna/instant-questions", {}, api_key=api_key, auth_token=auth_token)
+
+
+@mcp.tool(name="divine_get_kp_prashna_chart", annotations=TOOL_ANNOTATIONS)
+async def divine_get_kp_prashna_chart(
+    params: PrashnaInput = Field(..., description="When and where the question is asked"),
+    horary_number: int = Field(..., ge=1, le=249, description="The number from 1 to 249 that the querent thinks of"),
+    node_type: str | None = Field(default=None, description="Rahu/Ketu calculation method: 'meannode' (default) or 'truenode'"),
+    ctx: Context = None,
+) -> str:
+    """Build a KP Prashna (horary) chart from the querent's number (1-249) and the moment and place the question is asked.
+
+    Horary answers one specific question; it is not a birth chart. The
+    number fixes the Ascendant (house 1) at the start of one of the 249 KP
+    sub-divisions of the zodiac; the planets are the real sky at that
+    moment.
+
+    Returns horary_number; ascendant_source (the nakshatra, its lord, the
+    sub lord and the degree range the number maps to); 12 cusps (degree,
+    sign, nakshatra, pada, nakshatra/sub/sub-sub lords); 12 planets (Sun to
+    Pluto plus Rahu and Ketu: longitude, speed, is_retro, the same lords,
+    sign and house); significators.houses (per house: house_lord,
+    occupants and the combined KP significators, built from occupant's
+    star lord, occupant, house lord's star lord and house lord);
+    significators.planets (the houses each planet signifies); and
+    current_dasha (the Vimshottari maha, antar and pratyantar dasha running
+    at that moment, start and end in UT, plus houses_matching_current_dasha:
+    the houses whose significators include any of those lords).
+
+    To judge a question, take its houses from
+    divine_get_kp_prashna_instant_questions (house_hint), read them in
+    significators.houses, and check whether they appear in
+    houses_matching_current_dasha (timing active now). The API gives no
+    yes/no verdict; weighing the significators is left to the reader.
+    Names are returned in English. node_type only changes where Rahu and
+    Ketu fall.
+    """
+    payload = {**_prashna_payload(params), "horary_number": str(horary_number)}
+    err = _apply_node_type(payload, node_type)
+    if err:
+        raise ToolError(err)
+    api_key, auth_token = _get_credentials(ctx)
+    return await _call_divine_api("/indian-api/v1/kp-prashna/chart", payload, api_key=api_key, auth_token=auth_token)
+
+
+@mcp.tool(name="divine_get_kp_prashna_ruling_planets", annotations=TOOL_ANNOTATIONS)
+async def divine_get_kp_prashna_ruling_planets(
+    params: PrashnaInput = Field(..., description="When and where the question is asked"),
+    ctx: Context = None,
+) -> str:
+    """Get the KP Ruling Planets for a moment and place; no horary number needed.
+
+    Uses the real Ascendant and Moon at that moment. Returns ascendant and
+    moon (degree, sign, nakshatra, pada, nakshatra/sub/sub-sub lords),
+    ruling_planets (day_lord, moon_sign_lord, moon_star_lord,
+    moon_sub_lord, ascendant_sign_lord, ascendant_star_lord,
+    ascendant_sub_lord) and ruling_planets_list (the same planets,
+    de-duplicated).
+
+    The day lord follows the Vedic day, sunrise to sunrise, so a time
+    before local sunrise gets the previous weekday's lord. The classical
+    five ruling planets are these seven without the two sub lords. LSRD
+    (Lagna, Star, Rashi, Day) is ascendant_sign_lord, ascendant_star_lord,
+    moon_sign_lord and day_lord. Names are returned in English.
+    """
+    api_key, auth_token = _get_credentials(ctx)
+    return await _call_divine_api("/indian-api/v1/kp-prashna/ruling-planets", _prashna_payload(params), api_key=api_key, auth_token=auth_token)
+
+
+@mcp.tool(name="divine_get_kp_prashna_dasha", annotations=TOOL_ANNOTATIONS)
+async def divine_get_kp_prashna_dasha(
+    params: PrashnaInput = Field(..., description="When and where the question is asked"),
+    depth: str = Field(default="antardasha", description="How much of dasha_timeline to return: 'current' (none; current_dasha only), 'mahadasha' (9 periods), 'antardasha' (default; 9 mahadashas with their 81 antardashas) or 'full' (all 819 periods, about 135 KB)"),
+    ctx: Context = None,
+) -> str:
+    """Get the Vimshottari Dasha running when a KP Prashna question is asked, plus the 120-year timeline.
+
+    The dasha is anchored to the Moon at the moment of the question, not
+    a birth Moon. Returns current_dasha (mahadasha, antardasha and
+    pratyantardasha: lord, start and end in UT) and dasha_timeline, which
+    starts with the current mahadasha.
+
+    The API always sends the full tree: 9 mahadashas, each with 9
+    antardashas, each with 9 pratyantardashas (819 periods). depth trims
+    it before it is returned, and dasha_timeline_depth in the result says
+    which depth was used. divine_get_kp_prashna_chart already includes
+    current_dasha, so this tool is only needed for the wider timeline.
+    """
+    d = depth.lower().strip()
+    if d not in VALID_PRASHNA_DASHA_DEPTHS:
+        raise ToolError(f"Error: Invalid depth '{depth}'. Must be one of: {', '.join(VALID_PRASHNA_DASHA_DEPTHS)}")
+    api_key, auth_token = _get_credentials(ctx)
+    text = await _call_divine_api("/indian-api/v1/kp-prashna/dasha", _prashna_payload(params), api_key=api_key, auth_token=auth_token)
+    data = json.loads(text)
+    body = data.get("data") if isinstance(data, dict) else None
+    if not isinstance(body, dict) or not isinstance(body.get("dasha_timeline"), list):
+        return text
+    if d == "current":
+        body.pop("dasha_timeline")
+    elif d == "mahadasha":
+        for maha in body["dasha_timeline"]:
+            maha.pop("antardashas", None)
+    elif d == "antardasha":
+        for maha in body["dasha_timeline"]:
+            for antar in maha.get("antardashas") or []:
+                antar.pop("pratyantardashas", None)
+    body["dasha_timeline_depth"] = d
+    return json.dumps(data, indent=2, ensure_ascii=False)
 
 
 # ══════════════════════════════════════════════
